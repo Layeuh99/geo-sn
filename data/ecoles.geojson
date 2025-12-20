@@ -1,0 +1,28 @@
+{
+"type": "FeatureCollection",
+"name": "Ecoles",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::32628" } },
+"features": [
+{ "type": "Feature", "properties": { "osm_id": "3421542685", "code": 2082, "fclass": "school", "name": "Collége Privé Dabakh" }, "geometry": { "type": "Point", "coordinates": [ 275469.213255961192772, 1619922.047586989589036 ] } },
+{ "type": "Feature", "properties": { "osm_id": "3421542690", "code": 2082, "fclass": "school", "name": "Ecole Coranique" }, "geometry": { "type": "Point", "coordinates": [ 274681.642301732907072, 1616431.632841320475563 ] } },
+{ "type": "Feature", "properties": { "osm_id": "3421542691", "code": 2082, "fclass": "school", "name": "Ecole Coranique" }, "geometry": { "type": "Point", "coordinates": [ 275287.634230712312274, 1619414.117102414369583 ] } },
+{ "type": "Feature", "properties": { "osm_id": "3421562894", "code": 2082, "fclass": "school", "name": "Ecole primaire Diass 3" }, "geometry": { "type": "Point", "coordinates": [ 275555.271419987897389, 1620505.817201684229076 ] } },
+{ "type": "Feature", "properties": { "osm_id": "3421562895", "code": 2082, "fclass": "school", "name": "Ecole Privée primaire Dabakh" }, "geometry": { "type": "Point", "coordinates": [ 275567.695215112064034, 1619855.75488226255402 ] } },
+{ "type": "Feature", "properties": { "osm_id": "3421562897", "code": 2082, "fclass": "school", "name": "Ecole Arabe" }, "geometry": { "type": "Point", "coordinates": [ 273309.395458502171095, 1618168.578810718841851 ] } },
+{ "type": "Feature", "properties": { "osm_id": "3421562898", "code": 2082, "fclass": "school", "name": "Ecole primaire Tack" }, "geometry": { "type": "Point", "coordinates": [ 274738.214464064338244, 1615975.61831178702414 ] } },
+{ "type": "Feature", "properties": { "osm_id": "4550825596", "code": 2082, "fclass": "school", "name": "École de Louly Mbafaye" }, "geometry": { "type": "Point", "coordinates": [ 298304.698738464387134, 1596661.70452556759119 ] } },
+{ "type": "Feature", "properties": { "osm_id": "4721091489", "code": 2082, "fclass": "school", "name": "Ecole Elementaire de Mballing" }, "geometry": { "type": "Point", "coordinates": [ 290433.393209491623566, 1590630.781387304887176 ] } },
+{ "type": "Feature", "properties": { "osm_id": "5180260865", "code": 2082, "fclass": "school", "name": "Château d'Eau Nord" }, "geometry": { "type": "Point", "coordinates": [ 286447.941258072038181, 1595651.707381603308022 ] } },
+{ "type": "Feature", "properties": { "osm_id": "5538173822", "code": 2082, "fclass": "school", "name": "école privé Therno Cheick" }, "geometry": { "type": "Point", "coordinates": [ 284804.810969400510658, 1597807.118511020438746 ] } },
+{ "type": "Feature", "properties": { "osm_id": "7075445256", "code": 2082, "fclass": "school", "name": "Diass Excellence School" }, "geometry": { "type": "Point", "coordinates": [ 275653.97335777443368, 1619658.669077667640522 ] } },
+{ "type": "Feature", "properties": { "osm_id": "8044449970", "code": 2082, "fclass": "school", "name": "Institut René Merceron" }, "geometry": { "type": "Point", "coordinates": [ 285217.732189405011013, 1596984.32383738970384 ] } },
+{ "type": "Feature", "properties": { "osm_id": "8192211450", "code": 2082, "fclass": "school", "name": "École élémentaire Oumar Gueye" }, "geometry": { "type": "Point", "coordinates": [ 288560.212605844135396, 1594587.202630917541683 ] } },
+{ "type": "Feature", "properties": { "osm_id": "8192256071", "code": 2082, "fclass": "school", "name": "École élémentaire Cheikh Ahmadou Lo" }, "geometry": { "type": "Point", "coordinates": [ 288186.618844732001889, 1594861.628480696352199 ] } },
+{ "type": "Feature", "properties": { "osm_id": "8192256973", "code": 2082, "fclass": "school", "name": "Cours Privés les Formateurs" }, "geometry": { "type": "Point", "coordinates": [ 288696.376076769258361, 1594573.780657773837447 ] } },
+{ "type": "Feature", "properties": { "osm_id": "8821356709", "code": 2082, "fclass": "school", "name": "École élémentaire Ndiémane" }, "geometry": { "type": "Point", "coordinates": [ 300630.753012437489815, 1582555.802328918362036 ] } },
+{ "type": "Feature", "properties": { "osm_id": "8821365774", "code": 2082, "fclass": "school", "name": "École élémentaire Malicounda  Bambara" }, "geometry": { "type": "Point", "coordinates": [ 288190.521294668549672, 1599897.374665008857846 ] } },
+{ "type": "Feature", "properties": { "osm_id": "8821375993", "code": 2082, "fclass": "school", "name": "École élémentaire de Mbouléme" }, "geometry": { "type": "Point", "coordinates": [ 295762.185587664716877, 1591198.490213519195095 ] } },
+{ "type": "Feature", "properties": { "osm_id": "11538221934", "code": 2082, "fclass": "school", "name": null }, "geometry": { "type": "Point", "coordinates": [ 287919.052834900794551, 1595653.960469462443143 ] } },
+{ "type": "Feature", "properties": { "osm_id": "11881102545", "code": 2082, "fclass": "school", "name": null }, "geometry": { "type": "Point", "coordinates": [ 278155.006264808238484, 1611500.59758397215046 ] } }
+]
+}
