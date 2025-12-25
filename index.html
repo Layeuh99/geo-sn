@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projet Final - Gestion des Équipements scolaires</title>
+    <title>Gestion des Équipements Scolaires - Vélingara</title>
 
     <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -23,23 +23,36 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Leaflet Draw (outils de dessin) -->
+    <!-- Leaflet Draw -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
-    <!-- Leaflet Measure (outil de mesure) -->
+    <!-- Leaflet Measure -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-measure@3.1.0/dist/leaflet-measure.css">
     <script src="https://unpkg.com/leaflet-measure@3.1.0/dist/leaflet-measure.js"></script>
 
     <!-- Leaflet MiniMap -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.js"></script>
 
-    <!-- Plugin d'impression -->
-    <script src="js/leaflet.browser.print.min.js"></script>
-
     <style>
+        :root {
+            --primary-color: #0ea5e9;
+            --secondary-color: #a855f7;
+            --success-color: #22c55e;
+            --danger-color: #f43f5e;
+            --warning-color: #fb923c;
+            --info-color: #06b6d4;
+            --dark-bg: #0f172a;
+            --medium-bg: #1e293b;
+            --light-bg: #f1f5f9;
+            --sidebar-width: 320px;
+            --accent-gradient: linear-gradient(135deg, #0ea5e9 0%, #a855f7 100%);
+            --success-gradient: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+            --danger-gradient: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%);
+            --warning-gradient: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -47,176 +60,484 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            overflow: hidden;
         }
 
-        .main-container {
+        /* Navbar moderne */
+        .navbar {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--medium-bg) 50%, #312e81 100%);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            padding: 0.75rem 1.5rem;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.25rem;
             display: flex;
-            height: calc(100vh - 56px);
+            align-items: center;
+            gap: 0.75rem;
         }
 
-        .sidebar {
-            width: 300px;
-            background: white;
-            overflow-y: auto;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        .navbar-brand img {
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .sidebar-content {
-            padding: 20px;
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px;
         }
 
-        #map {
-            flex: 1;
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
         }
 
-         Icônes de navigation dans le menu 
+        .nav-link.active {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.3), rgba(168, 85, 247, 0.3));
+            border-bottom: 2px solid var(--primary-color);
+        }
+
         .nav-icon-btn {
-            background: none;
+            background: rgba(255, 255, 255, 0.1);
             border: none;
-            color: rgba(255, 255, 255, 0.9);
+            color: #fff;
             font-size: 1.2rem;
             padding: 0.5rem 0.75rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 0 0.25rem;
         }
 
         .nav-icon-btn:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
+            background: var(--accent-gradient);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
         }
 
+        /* Container principal */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 64px);
+            position: relative;
+        }
+
+        /* Sidebar moderne */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 50%, #e0f2fe 100%);
+            overflow-y: auto;
+            box-shadow: 4px 0 24px rgba(14, 165, 233, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            position: relative;
+        }
+
+        .sidebar.collapsed {
+            margin-left: calc(-1 * var(--sidebar-width));
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            right: -40px;
+            top: 20px;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+        }
+
+        .sidebar-content {
+            padding: 1.5rem;
+        }
+
+        /* Sections du panneau */
         .panel-section {
-            background: #f8f9fa;
-            border-left: 4px solid #0d6efd;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 5px;
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 2px 8px rgba(14, 165, 233, 0.08);
+            border: 1px solid #bae6fd;
+            transition: all 0.3s ease;
+        }
+
+        .panel-section:hover {
+            box-shadow: 0 8px 24px rgba(14, 165, 233, 0.15);
+            transform: translateY(-2px);
+            border-color: var(--primary-color);
         }
 
         .panel-section h3 {
-            color: #0d6efd;
-            font-size: 1.1em;
-            margin-bottom: 10px;
+            color: var(--dark-bg);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
+        .panel-section h3 i {
+            color: var(--primary-color);
+        }
+
+        /* Éléments de couche */
         .layer-item {
             display: flex;
             align-items: center;
-            margin: 8px 0;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .layer-item:hover {
+            background: linear-gradient(135deg, #e0f2fe 0%, #ddd6fe 100%);
         }
 
         .layer-item input[type="checkbox"] {
-            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .layer-item label {
+            flex: 1;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
         }
 
         .layer-count {
-            margin-left: auto;
-            background: #0d6efd;
+            background: var(--accent-gradient);
             color: white;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.8em;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: 0 3px 8px rgba(14, 165, 233, 0.4);
         }
 
-         Symboles dans la sidebar 
+        /* Symboles */
         .layer-symbol {
             display: inline-block;
-            margin-right: 8px;
+            margin-right: 10px;
         }
 
         .symbol-polygon-arrondissement {
             width: 20px;
             height: 20px;
-            border: 2px solid #06010fde;
-            background: rgba(233, 232, 237, 0.064);
-            display: inline-block;
+            border: 2px solid #3b82f6;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(96, 165, 250, 0.3));
+            border-radius: 4px;
         }
 
         .symbol-polygon-departement {
             width: 20px;
             height: 20px;
-            border: 2px solid #df1f06de;
-            background: rgba(140, 120, 223, 0.064);
-            display: inline-block;
+            border: 2px solid #a855f7;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(192, 132, 252, 0.3));
+            border-radius: 4px;
         }
 
         .symbol-line {
             width: 20px;
             height: 3px;
-            background: #fd7e14;
-            display: inline-block;
+            background: var(--warning-gradient);
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(251, 146, 60, 0.3);
         }
 
         .symbol-point {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
-            display: inline-block;
             border: 2px solid white;
-            box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .symbol-ecole {
-            background: #28a745;
+            background: var(--success-color);
         }
 
         .symbol-localite {
-            background: #dc3545;
+            background: var(--danger-color);
         }
 
-         Légende 
+        /* Carte */
+        #map {
+            flex: 1;
+            position: relative;
+        }
+
+        /* Bouton de recentrage */
+        .recenter-btn {
+            position: absolute;
+            top: 80px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            border: 2px solid rgba(0,0,0,0.2);
+            border-radius: 8px;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+
+        .recenter-btn:hover {
+            background: var(--accent-gradient);
+            color: white;
+            transform: scale(1.15);
+            box-shadow: 0 4px 16px rgba(14, 165, 233, 0.4);
+        }
+
+        /* Info box moderne */
+        .info-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%);
+            border-left: 4px solid var(--warning-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #92400e;
+            box-shadow: 0 4px 12px rgba(251, 146, 60, 0.25);
+        }
+
+        .info-box strong {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Légende moderne */
         .legend {
             background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e2e8f0;
         }
 
         .legend h4 {
-            margin: 0 0 10px 0;
-            color: #0d6efd;
-            font-size: 1em;
+            margin: 0 0 0.75rem 0;
+            color: var(--dark-bg);
+            font-size: 0.95rem;
+            font-weight: 600;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            margin: 8px 0;
-            font-size: 0.9em;
+            margin: 0.5rem 0;
+            font-size: 0.85rem;
         }
 
         .legend-symbol {
             margin-right: 10px;
         }
 
-        .info-box {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 3px;
-            font-size: 0.85em;
-            color: #856404;
+        /* Modals modernes */
+        .modal-content {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
-         Chart container 
+        .modal-header {
+            border-radius: 16px 16px 0 0;
+            padding: 1.5rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        /* Boutons de requête */
+        .query-section {
+            margin-top: 1rem;
+        }
+
+        .query-btn {
+            width: 100%;
+            margin: 0.5rem 0;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .query-btn-attr {
+            background: linear-gradient(135deg, #06b6d4, #0891b2, #0e7490);
+            color: white;
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+        }
+
+        .query-btn-spatial {
+            background: linear-gradient(135deg, #a855f7, #9333ea, #7e22ce);
+            color: white;
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+        }
+
+        .query-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Formulaires de requête */
+        .query-form {
+            background: var(--light-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.75rem;
+            display: none;
+        }
+
+        .query-form.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--dark-bg);
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-execute {
+            background: var(--success-gradient);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-execute:hover {
+            background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        /* Résultats de requête */
+        .query-results {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            background: var(--light-bg);
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        /* Chart container */
         .chart-container {
             position: relative;
             height: 300px;
             margin: 20px 0;
+        }
+
+        /* Scrollbar personnalisée */
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: linear-gradient(180deg, #e0f2fe, #ddd6fe);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--accent-gradient);
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #0284c7, #9333ea);
         }
     </style>
 </head>
 
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
-                <img src="img/sn.jpg" alt="Logo" style="height: 30px; margin-right: 10px;">
-                Équipements scolaires - Velingara
+                <img src="img/sn.jpg" alt="Logo" style="height: 30px;">
+                <span>Équipements Scolaires - Mbour</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -230,18 +551,15 @@
                         <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">À propos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal"
-                            data-bs-target="#catalogueModal">Catalogue</a>
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#catalogueModal">Catalogue</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal"
-                            data-bs-target="#graphiqueModal">Graphique</a>
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#graphiqueModal">Graphique</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" onclick="telechargerDonnees()">Téléchargement</a>
                     </li>
                 </ul>
-                <!-- Outils de navigation avec icônes -->
                 <div class="d-flex">
                     <button class="nav-icon-btn" onclick="precedent()" title="Précédent">
                         <i class="bi bi-arrow-left-circle"></i>
@@ -259,94 +577,168 @@
 
     <div class="main-container">
         <!-- Panneau latéral -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="bi bi-chevron-left" id="toggleIcon"></i>
+            </button>
+            
             <div class="sidebar-content">
                 <!-- Gestion des couches -->
                 <div class="panel-section">
-                    <h3>🗺️ Gestion des couches</h3>
+                    <h3><i class="bi bi-layers"></i> Gestion des Couches</h3>
 
-                    <!-- Localités (Points) -->
                     <div class="layer-item">
-                        <input class="form-check-input" type="checkbox" id="layerLocalites" checked
-                            onchange="toggleLayer('localites')">
-                        <span class="layer-symbol symbol-point symbol-localite"></span>
-                        <label for="layerLocalites">Localités</label>
-                        <span class="layer-count" id="countLocalites">0</span>
-                    </div>
-
-                    <!-- Écoles (Points) -->
-                    <div class="layer-item">
-                        <input class="form-check-input" type="checkbox" id="layerEcoles" checked
-                            onchange="toggleLayer('ecoles')">
+                        <input class="form-check-input" type="checkbox" id="layerEcoles" checked onchange="toggleLayer('ecoles')">
                         <span class="layer-symbol symbol-point symbol-ecole"></span>
                         <label for="layerEcoles">Écoles</label>
                         <span class="layer-count" id="countEcoles">0</span>
                     </div>
 
-
-                    <!-- Routes (Lignes) -->
                     <div class="layer-item">
-                        <input class="form-check-input" type="checkbox" id="layerRoutes" checked
-                            onchange="toggleLayer('routes')">
+                        <input class="form-check-input" type="checkbox" id="layerLocalites" checked onchange="toggleLayer('localites')">
+                        <span class="layer-symbol symbol-point symbol-localite"></span>
+                        <label for="layerLocalites">Localités</label>
+                        <span class="layer-count" id="countLocalites">0</span>
+                    </div>
+
+                    <div class="layer-item">
+                        <input class="form-check-input" type="checkbox" id="layerRoutes" checked onchange="toggleLayer('routes')">
                         <span class="layer-symbol symbol-line"></span>
                         <label for="layerRoutes">Routes</label>
                         <span class="layer-count" id="countRoutes">0</span>
                     </div>
 
-                    <!-- Arrondissements (Polygones) -->
                     <div class="layer-item">
-                        <input class="form-check-input" type="checkbox" id="layerArrondissements" checked
-                            onchange="toggleLayer('arrondissements')">
+                        <input class="form-check-input" type="checkbox" id="layerArrondissements" checked onchange="toggleLayer('arrondissements')">
                         <span class="layer-symbol symbol-polygon-arrondissement"></span>
                         <label for="layerArrondissements">Arrondissements</label>
                         <span class="layer-count" id="countArrondissements">0</span>
                     </div>
 
-                    <!-- Departement (Zone de travail) -->
                     <div class="layer-item">
-                        <input class="form-check-input" type="checkbox" id="layerDepartements" checked
-                            onchange=" toggleLayer('departements')">
+                        <input class="form-check-input" type="checkbox" id="layerDepartements" checked onchange="toggleLayer('departements')">
                         <span class="layer-symbol symbol-polygon-departement"></span>
-                        <label for="layerDepartements">Departements</label>
-                        <span class=" layer-count" id="countDepartements">0</span>
+                        <label for="layerDepartements">Départements</label>
+                        <span class="layer-count" id="countDepartements">0</span>
                     </div>
-
                 </div>
 
-                <!-- Instructions TODO -->
+                <!-- Outils de Requête -->
+                <div class="panel-section">
+                    <h3><i class="bi bi-search"></i> Outils de Requête</h3>
+                    
+                    <div class="query-section">
+                        <button class="query-btn query-btn-attr" onclick="toggleQueryForm('attributaire')">
+                            <i class="bi bi-table"></i> Requête Attributaire
+                        </button>
+                        
+                        <!-- Formulaire de requête attributaire -->
+                        <div class="query-form" id="queryFormAttr">
+                            <div class="form-group">
+                                <label>Couche</label>
+                                <select id="attrLayer">
+                                    <option value="localites">Localités</option>
+                                    <option value="ecoles">Écoles</option>
+                                    <option value="routes">Routes</option>
+                                    <option value="arrondissements">Arrondissements</option>
+                                    <option value="departements">Départements</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Attribut</label>
+                                <select id="attrField">
+                                    <option value="nom">Nom</option>
+                                    <option value="type">Type</option>
+                                    <option value="population">Population</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Valeur</label>
+                                <input type="text" id="attrValue" placeholder="Entrez la valeur...">
+                            </div>
+                            <button class="btn-execute" onclick="executeAttributeQuery()">
+                                <i class="bi bi-play-fill"></i> Exécuter
+                            </button>
+                            <div class="query-results" id="attrResults" style="display: none;"></div>
+                        </div>
+
+                        <button class="query-btn query-btn-spatial" onclick="toggleQueryForm('spatiale')">
+                            <i class="bi bi-geo-alt"></i> Requête Spatiale
+                        </button>
+                        
+                        <!-- Formulaire de requête spatiale -->
+                        <div class="query-form" id="queryFormSpatial">
+                            <div class="form-group">
+                                <label>Couche Source</label>
+                                <select id="spatialSourceLayer">
+                                    <option value="localites">Localités</option>
+                                    <option value="ecoles">Écoles</option>
+                                    <option value="routes">Routes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Relation Spatiale</label>
+                                <select id="spatialRelation">
+                                    <option value="within">À l'intérieur</option>
+                                    <option value="intersects">Intersecte</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Couche Polygone</label>
+                                <select id="spatialTargetLayer">
+                                    <option value="arrondissements">Arrondissements</option>
+                                    <option value="departements">Départements</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Sélectionner le polygone</label>
+                                <select id="polygonSelect">
+                                    <option value="">Chargement...</option>
+                                </select>
+                            </div>
+                            <button class="btn-execute" onclick="executeSpatialQuery()">
+                                <i class="bi bi-play-fill"></i> Exécuter
+                            </button>
+                            <div class="query-results" id="spatialResults" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Instructions -->
                 <div class="info-box">
-                    <strong>📝 À faire :</strong>
+                    <strong><i class="bi bi-info-circle"></i> Instructions</strong>
                     <ul style="margin: 5px 0 0 20px; padding: 0;">
-                        <li>Créer les fichiers GeoJSON</li>
-                        <li>Charger les données</li>
-                        <li>Changer les coordonnées et zoom initial et Tester les outils</li>
-                        <li>Ajouter toutes autres fonctionnalités qui vous semble necessaire à l'aide de l'IA Gemini,
-                            Claude, ChatGPT</li>
-                        <li>Deploiement votre application en ligne sur GitHub</li>
-                        <li>Envoyer le lien de l'url de projet par mail</li>
+                        <li>Utilisez les requêtes pour filtrer vos données</li>
+                        <li>Cliquez sur les éléments pour voir les détails</li>
+                        <li>Utilisez les outils de dessin et de mesure</li>
+                        <li>Téléchargez vos données modifiées</li>
                     </ul>
                 </div>
             </div>
         </div>
 
         <!-- Carte -->
-        <div id="map"></div>
+        <div id="map">
+            <button class="recenter-btn" onclick="vueGlobale()" title="Recentrer la vue">
+                <i class="bi bi-crosshair"></i>
+            </button>
+        </div>
     </div>
 
     <!-- Modal À propos -->
     <div class="modal fade" id="aboutModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header bg-info text-white">
-                    <h5 class="modal-title">À propos</h5>
+                <div class="modal-header" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                    <h5 class="modal-title text-white">À propos</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <h6>Projet Final - SIG Web</h6>
                     <p><strong>Application :</strong> Gestion des Équipements Scolaires</p>
-                    <p><strong>Departement :</strong> Vélingara</p>
-                    <p><strong>Auteur :</strong> [VOTRE NOM]</p>
-                    <p><strong>Promotion :</strong> Licence [ANNÉE]</p>
+                    <p><strong>Département :</strong> Mbour</p>
+                    <p><strong>Auteur :</strong> Mouhsine Abdallah Babacar Diao</p>
+                    <p><strong>Promotion :</strong> Master 2025/2026</p>
                     <hr>
                     <h6>Technologies utilisées</h6>
                     <ul>
@@ -365,8 +757,8 @@
     <div class="modal fade" id="catalogueModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">Catalogue des données</h5>
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+                    <h5 class="modal-title text-white">Catalogue des données</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -379,7 +771,6 @@
                             </tr>
                         </thead>
                         <tbody>
-
                             <tr>
                                 <td>Localités</td>
                                 <td>Points</td>
@@ -389,19 +780,19 @@
                                 <td>Écoles</td>
                                 <td>Points</td>
                                 <td><span id="catalogueEcoles">0</span></td>
+                            </tr>
                             <tr>
                                 <td>Routes</td>
                                 <td>Lignes</td>
                                 <td><span id="catalogueRoutes">0</span></td>
                             </tr>
-
                             <tr>
                                 <td>Arrondissements</td>
                                 <td>Polygones</td>
                                 <td><span id="catalogueArrondissements">0</span></td>
                             </tr>
                             <tr>
-                                <td>Departements</td>
+                                <td>Départements</td>
                                 <td>Polygones</td>
                                 <td><span id="catalogueDepartements">0</span></td>
                             </tr>
@@ -416,8 +807,8 @@
     <div class="modal fade" id="graphiqueModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">Graphiques statistiques</h5>
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--success-color), #059669);">
+                    <h5 class="modal-title text-white">Graphiques statistiques</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -425,7 +816,6 @@
                     <div class="chart-container">
                         <canvas id="chartEquipements"></canvas>
                     </div>
-
                     <h6 class="mt-4">Distribution par type</h6>
                     <div class="chart-container">
                         <canvas id="chartDistribution"></canvas>
@@ -436,262 +826,240 @@
     </div>
 
     <script>
-        /* ========================================
-           CONFIGURATION INITIALE
-           ======================================== */
+        /* CONFIGURATION INITIALE */
+        var centerLat = 14.4208378;
+        var centerLon = -16.9714013;
+        var initialZoom = 13;
 
-        // TODO: Modifiez ces coordonnées pour centrer sur VOTRE DEPARTEMENT DE TRAVAIL
-        var centerLat = 13.1500000;  // Latitude du point central votre departement
-        var centerLon = -14.1113889; // Longitude du point central de votre departement
-        var initialZoom = 13;       // Niveau de zoom initial
-
-
-        /* ========================================
-           INITIALISATION DE LA CARTE
-           ======================================== */
-
+        /* INITIALISATION DE LA CARTE */
         var map = L.map('map').setView([centerLat, centerLon], initialZoom);
 
-        // Fond de carte OpenStreetMap
         var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // Fond de carte satellite
         var satellite = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
             maxZoom: 20,
             attribution: '© Google'
         });
 
-        // Contrôle des fonds de carte
         var baseMaps = {
             "OpenStreetMap": osm,
             "Satellite Google": satellite
         };
 
-        // Variables pour les couches de données
-
+        // Ordre d'affichage: Départements (bas) -> Arrondissements -> Routes -> Localités -> Écoles (haut)
+        var layerDepartements = L.layerGroup().addTo(map);
+        var layerArrondissements = L.layerGroup().addTo(map);
+        var layerRoutes = L.layerGroup().addTo(map);
         var layerLocalites = L.layerGroup().addTo(map);
         var layerEcoles = L.layerGroup().addTo(map);
-        var layerRoutes = L.layerGroup().addTo(map);
-        var layerArrondissements = L.layerGroup().addTo(map);
-        var layerDepartements = L.layerGroup().addTo(map);
 
-        // Liste des équipements (pour navigation)
         var equipementsList = [];
         var currentIndex = 0;
 
-        // Compteurs pour les graphiques
         var stats = {
-
             localites: 0,
             ecoles: 0,
             routes: 0,
             arrondissements: 0,
-            departement: 0
+            departements: 0
         };
 
+        // Stockage des données GeoJSON pour les requêtes
+        var geoJsonData = {
+            localites: null,
+            ecoles: null,
+            routes: null,
+            arrondissements: null,
+            departements: null
+        };
 
-        /* ========================================
-           CHARGEMENT DES DONNÉES GEOJSON
-           ======================================== */
+        /* CHARGEMENT DES DONNÉES GEOJSON */
+        // Ordre de chargement: Départements d'abord (fond) puis couches supérieures
 
-        // TODO ÉTAPE 1: Créez des fichiers GeoJSON dans le dossier data/
-        // Fichiers à créer:
-        //   - data/localites.geojson (points)
-        //   - data/ecoles.geojson (points)
-        //   - data/routes.geojson(lignes)
-        //   - data/arrondissements.geojson(polygones)
-        //   - data/departements.geojson(polygones)
+        // Départements (chargé en premier pour être au fond)
+        $.getJSON('data/departements.geojson', function(data) {
+            geoJsonData.departements = data;
+            console.log('✅ Départements chargés:', data.features.length);
+            L.geoJSON(data, {
+                style: {
+                    color: "#8b5cf6",
+                    weight: 2,
+                    fillColor: "#8b5cf6",
+                    fillOpacity: 0.2
+                },
+                onEachFeature: function(feature, layer) {
+                    var props = feature.properties;
+                    layer.bindPopup(`
+                        <div style="min-width: 200px;">
+                            <h5 style="color: #8b5cf6; margin-top: 0;">📍 ${props.nom || props.name}</h5>
+                            <p><strong>Type :</strong> Département</p>
+                            <p><strong>Population :</strong> ${props.population || 'N/A'}</p>
+                        </div>
+                    `);
+                }
+            }).addTo(layerDepartements);
+            stats.departements = data.features.length;
+            document.getElementById('countDepartements').textContent = stats.departements;
+            document.getElementById('catalogueDepartements').textContent = stats.departements;
+            updateCharts();
+            updatePolygonSelect();
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('❌ Erreur chargement departements.geojson:', textStatus, errorThrown);
+            alert('Erreur: Le fichier data/departements.geojson est introuvable ou invalide');
+        });
 
-        // VOICI LES DIFFERENTES ETAPES A SUIVRE POUR CHARGER VOS DONNEES GEOJSON
+        // Arrondissements
+        $.getJSON('data/arrondissements.geojson', function (data) {
+            geoJsonData.arrondissements = data;
+            console.log('✅ Arrondissements chargés:', data.features.length);
+            L.geoJSON(data, {
+                style: {
+                    color: "#6366f1",
+                    weight: 2,
+                    fillColor: "#6366f1",
+                    fillOpacity: 0.2
+                },
+                onEachFeature: function (feature, layer) {
+                    var props = feature.properties;
+                    layer.bindPopup(`
+                        <div style="min-width: 200px;">
+                            <h5 style="color: #6366f1; margin-top: 0;">📍 ${props.nom || props.name}</h5>
+                            <p><strong>Type :</strong> Arrondissement</p>
+                            <p><strong>Population :</strong> ${props.population || 'N/A'}</p>
+                        </div>
+                    `);
+                }
+            }).addTo(layerArrondissements);
+            stats.arrondissements = data.features.length;
+            document.getElementById('countArrondissements').textContent = stats.arrondissements;
+            document.getElementById('catalogueArrondissements').textContent = stats.arrondissements;
+            updateCharts();
+            updatePolygonSelect();
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('❌ Erreur chargement arrondissements.geojson:', textStatus, errorThrown);
+            alert('Erreur: Le fichier data/arrondissements.geojson est introuvable ou invalide');
+        });
 
-        // TODO ÉTAPE 1: Chargez les LOCALITÉS (Points)
-        
-                $.getJSON('data/localites.geojson', function (data) {
-                    L.geoJSON(data, {
-                        pointToLayer: function (feature, latlng) {
-                            return L.circleMarker(latlng, {
-                                radius: 8,
-                                fillColor: "#dc3545",
-                                color: "#fff",
-                                weight: 2,
-                                opacity: 1,
-                                fillOpacity: 0.8
-                            });
-                        },
-                        onEachFeature: function (feature, layer) {
-                            var props = feature.properties;
-        
-                            equipementsList.push({
-                                type: 'localite',
-                                layer: layer,
-                                latlng: layer.getLatLng()
-                            });
-        
-                            layer.bindPopup(`
-                                <div style="min-width: 200px;">
-                                    <h5 style="color: #dc3545; margin-top: 0;">🏘️ ${props.nom || props.name}</h5>
-                                    <p><strong>Type :</strong> ${props.type || 'Localité'}</p>
-                                    <p><strong>Population :</strong> ${props.population || 'N/A'}</p>
-                                </div>
-                            `);
-                        }
-                    }).addTo(layerLocalites);
-        
-                    stats.localites = data.features.length;
-                    document.getElementById('countLocalites').textContent = stats.localites;
-                    document.getElementById('catalogueLocalites').textContent = stats.localites;
-                    updateCharts();
-                });
-        
+        // Routes
+        $.getJSON('data/routes.geojson', function (data) {
+            geoJsonData.routes = data;
+            console.log('✅ Routes chargées:', data.features.length);
+            L.geoJSON(data, {
+                style: {
+                    color: "#f59e0b",
+                    weight: 3,
+                    opacity: 0.8
+                },
+                onEachFeature: function (feature, layer) {
+                    var props = feature.properties;
+                    layer.bindPopup(`
+                        <div style="min-width: 200px;">
+                            <h5 style="color: #f59e0b; margin-top: 0;">🛣️ ${props.nom || props.name}</h5>
+                            <p><strong>Type :</strong> ${props.type || 'Route'}</p>
+                            <p><strong>Classe :</strong> ${props.classe || 'N/A'}</p>
+                        </div>
+                    `);
+                }
+            }).addTo(layerRoutes);
+            stats.routes = data.features.length;
+            document.getElementById('countRoutes').textContent = stats.routes;
+            document.getElementById('catalogueRoutes').textContent = stats.routes;
+            updateCharts();
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('❌ Erreur chargement routes.geojson:', textStatus, errorThrown);
+            alert('Erreur: Le fichier data/routes.geojson est introuvable ou invalide');
+        });
 
+        // Localités
+        $.getJSON('data/localites.geojson', function (data) {
+            geoJsonData.localites = data;
+            console.log('✅ Localités chargées:', data.features.length);
+            L.geoJSON(data, {
+                pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, {
+                        radius: 8,
+                        fillColor: "#ef4444",
+                        color: "#fff",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    });
+                },
+                onEachFeature: function (feature, layer) {
+                    var props = feature.properties;
+                    equipementsList.push({
+                        type: 'localite',
+                        layer: layer,
+                        latlng: layer.getLatLng(),
+                        properties: props
+                    });
+                    layer.bindPopup(`
+                        <div style="min-width: 200px;">
+                            <h5 style="color: #ef4444; margin-top: 0;">🏘️ ${props.nom || props.name}</h5>
+                            <p><strong>Type :</strong> ${props.type || 'Localité'}</p>
+                            <p><strong>Population :</strong> ${props.population || 'N/A'}</p>
+                        </div>
+                    `);
+                }
+            }).addTo(layerLocalites);
+            stats.localites = data.features.length;
+            document.getElementById('countLocalites').textContent = stats.localites;
+            document.getElementById('catalogueLocalites').textContent = stats.localites;
+            updateCharts();
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('❌ Erreur chargement localites.geojson:', textStatus, errorThrown);
+            alert('Erreur: Le fichier data/localites.geojson est introuvable ou invalide');
+        });
 
-        // TODO ÉTAPE 2: Chargez les ÉCOLES (Points)
-        
-                $.getJSON('data/ecoles.geojson', function (data) {
-                    L.geoJSON(data, {
-                        pointToLayer: function (feature, latlng) {
-                            return L.circleMarker(latlng, {
-                                radius: 8,
-                                fillColor: "#28a745",
-                                color: "#fff",
-                                weight: 2,
-                                opacity: 1,
-                                fillOpacity: 0.8
-                            });
-                        },
-                        onEachFeature: function (feature, layer) {
-                            var props = feature.properties;
-        
-                            equipementsList.push({
-                                type: 'ecole',
-                                layer: layer,
-                                latlng: layer.getLatLng()
-                            });
-        
-                            layer.bindPopup(`
-                                <div style="min-width: 200px;">
-                                    <h5 style="color: #28a745; margin-top: 0;">🏫 ${props.nom || props.name}</h5>
-                                    <p><strong>Type :</strong> ${props.type || 'École'}</p>
-                                    <p><strong>Adresse :</strong> ${props.adresse || 'N/A'}</p>
-                                    <p><strong>Élèves :</strong> ${props.eleves || 'N/A'}</p>
-                                </div>
-                            `);
-                        }
-                    }).addTo(layerEcoles);
-        
-                    stats.ecoles = data.features.length;
-                    document.getElementById('countEcoles').textContent = stats.ecoles;
-                    document.getElementById('catalogueEcoles').textContent = stats.ecoles;
-                    updateCharts();
-                });
-        
-                
+        // Écoles (chargé en dernier pour être au-dessus)
+        $.getJSON('data/ecoles.geojson', function (data) {
+            geoJsonData.ecoles = data;
+            console.log('✅ Écoles chargées:', data.features.length);
+            L.geoJSON(data, {
+                pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, {
+                        radius: 8,
+                        fillColor: "#10b981",
+                        color: "#fff",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    });
+                },
+                onEachFeature: function (feature, layer) {
+                    var props = feature.properties;
+                    equipementsList.push({
+                        type: 'ecole',
+                        layer: layer,
+                        latlng: layer.getLatLng(),
+                        properties: props
+                    });
+                    layer.bindPopup(`
+                        <div style="min-width: 200px;">
+                            <h5 style="color: #10b981; margin-top: 0;">🏫 ${props.nom || props.name}</h5>
+                            <p><strong>Type :</strong> ${props.type || 'École'}</p>
+                            <p><strong>Adresse :</strong> ${props.adresse || 'N/A'}</p>
+                            <p><strong>Élèves :</strong> ${props.eleves || 'N/A'}</p>
+                        </div>
+                    `);
+                }
+            }).addTo(layerEcoles);
+            stats.ecoles = data.features.length;
+            document.getElementById('countEcoles').textContent = stats.ecoles;
+            document.getElementById('catalogueEcoles').textContent = stats.ecoles;
+            updateCharts();
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('❌ Erreur chargement ecoles.geojson:', textStatus, errorThrown);
+            alert('Erreur: Le fichier data/ecoles.geojson est introuvable ou invalide');
+        });
 
-        // TODO ÉTAPE 3: Chargez les ROUTES (Lignes)
-        
-                $.getJSON('data/routes.geojson', function (data) {
-                    L.geoJSON(data, {
-                        style: {
-                            color: "#fd7e14",
-                            weight: 3,
-                            opacity: 0.8
-                        },
-                        onEachFeature: function (feature, layer) {
-                            var props = feature.properties;
-                            layer.bindPopup(`
-                                <div style="min-width: 200px;">
-                                    <h5 style="color: #fd7e14; margin-top: 0;">🛣️ ${props.nom || props.name}</h5>
-                                    <p><strong>Type :</strong> ${props.type || 'Route'}</p>
-                                    <p><strong>Classe :</strong> ${props.classe || 'N/A'}</p>
-                                </div>
-                            `);
-                        }
-                    }).addTo(layerRoutes);
-        
-                    stats.routes = data.features.length;
-                    document.getElementById('countRoutes').textContent = stats.routes;
-                    document.getElementById('catalogueRoutes').textContent = stats.routes;
-                    updateCharts();
-                });
-        
-        
-
-
-        // TODO ÉTAPE 4: Chargez les ARRONDISSEMENTS (Polygones)
-
-        
-                $.getJSON('data/arrondissements.geojson', function (data) {
-                    L.geoJSON(data, {
-                        style: {
-                            color: "#6f42c1",
-                            weight: 2,
-                            fillColor: "#6f42c1",
-                            fillOpacity: 0.3
-                        },
-                        onEachFeature: function (feature, layer) {
-                            var props = feature.properties;
-                            layer.bindPopup(`
-                                        <div style="min-width: 200px;">
-                                            <h5 style="color: #6f42c1; margin-top: 0;">📍 ${props.nom || props.name}</h5>
-                                            <p><strong>Type :</strong> Arrondissement</p>
-                                            <p><strong>Population :</strong> ${props.population || 'N/A'}</p>
-                                        </div>
-                                    `);
-                        }
-                    }).addTo(layerArrondissements);
-        
-                    stats.arrondissements = data.features.length;
-                    document.getElementById('countArrondissements').textContent = stats.arrondissements;
-                    document.getElementById('catalogueArrondissements').textContent = stats.arrondissements;
-                    updateCharts();
-                });
-        
-        
-        // TODO ÉTAPE 5: Chargez le DEPARTEMENT DE VOTRE DE PROJET (Polygones)
-
-        
-                $.getJSON('data/departements.geojson', function(data) {
-                    L.geoJSON(data, {
-                        style: {
-                            color: "#6f42c1",
-                            weight: 2,
-                            fillColor: "#6f42c1",
-                            fillOpacity: 0.3
-                        },
-                        onEachFeature: function(feature, layer) {
-                            var props = feature.properties;
-                            layer.bindPopup(`
-                                <div style="min-width: 200px;">
-                                    <h5 style="color: #6f42c1; margin-top: 0;">📍 ${props.nom || props.name}</h5>
-                                    <p><strong>Type :</strong> Departements</p>
-                                    <p><strong>Population :</strong> ${props.population || 'N/A'}</p>
-                                </div>
-                            `);
-                        }
-                    }).addTo(layerDepartements);
-        
-                    stats.departements = data.features.length;
-                    document.getElementById('countDepartements').textContent = stats.departements;
-                    document.getElementById('catalogueDepartements').textContent = stats.departements;
-                    updateCharts();
-                });
-                
-
-        /* ========================================
-           CONTRÔLE DES FONDS DE CARTE
-           ======================================== */
-
-        // Contrôle uniquement pour changer le fond de carte (OSM / Satellite)
+        /* CONTRÔLE DES FONDS DE CARTE */
         L.control.layers(baseMaps, null).addTo(map);
 
-
-        /* ========================================
-           OUTILS DE DESSIN
-           ======================================== */
-
+        /* OUTILS DE DESSIN */
         var drawnItems = new L.FeatureGroup();
         map.addLayer(drawnItems);
 
@@ -715,17 +1083,12 @@
         });
         map.addControl(drawControl);
 
-        // Événements de dessin
         map.on('draw:created', function (e) {
             var layer = e.layer;
             drawnItems.addLayer(layer);
         });
 
-
-        /* ========================================
-           OUTIL DE MESURE
-           ======================================== */
-
+        /* OUTIL DE MESURE */
         var measureControl = L.control.measure({
             position: 'topleft',
             primaryLengthUnit: 'kilometers',
@@ -735,11 +1098,7 @@
         });
         measureControl.addTo(map);
 
-
-        /* ========================================
-           MINIMAP
-           ======================================== */
-
+        /* MINIMAP */
         var miniMapLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
@@ -751,18 +1110,13 @@
             position: 'bottomleft'
         }).addTo(map);
 
-
-        /* ========================================
-           LÉGENDE DYNAMIQUE
-           ======================================== */
-
+        /* LÉGENDE DYNAMIQUE */
         var legend = L.control({ position: 'bottomright' });
 
         legend.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'legend');
             div.innerHTML = `
                 <h4>Légende</h4>
-                               
                 <div class="legend-item">
                     <span class="legend-symbol symbol-point symbol-localite"></span>
                     Localités
@@ -781,7 +1135,7 @@
                 </div>
                 <div class="legend-item">
                     <span class="legend-symbol symbol-polygon-departement"></span>
-                    Departements
+                    Départements
                 </div>
             `;
             return div;
@@ -789,30 +1143,25 @@
 
         legend.addTo(map);
 
-
-        /* ========================================
-           GRAPHIQUES CHART.JS
-           ======================================== */
-
+        /* GRAPHIQUES CHART.JS */
         var chartEquipements = null;
         var chartDistribution = null;
 
         function initCharts() {
-            // Graphique en camembert
             var ctx1 = document.getElementById('chartEquipements');
             if (ctx1) {
                 chartEquipements = new Chart(ctx1, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Localités', 'Écoles', 'Routes', 'Arrondissements', 'Departements'],
+                        labels: ['Localités', 'Écoles', 'Routes', 'Arrondissements', 'Départements'],
                         datasets: [{
-                            data: [0, 0, 0, 0],
+                            data: [0, 0, 0, 0, 0],
                             backgroundColor: [
-                                'rgba(253, 126, 20, 0.8)',
-                                'rgba(220, 53, 69, 0.8)',
-                                'rgba(40, 167, 69, 0.8)',
-                                'rgba(111, 66, 193, 0.8)',
-                                'rgba(0, 123, 255, 0.8)'
+                                'rgba(239, 68, 68, 0.8)',
+                                'rgba(16, 185, 129, 0.8)',
+                                'rgba(245, 158, 11, 0.8)',
+                                'rgba(99, 102, 241, 0.8)',
+                                'rgba(139, 92, 246, 0.8)'
                             ],
                             borderColor: '#fff',
                             borderWidth: 2
@@ -830,24 +1179,21 @@
                 });
             }
 
-            // Graphique en barres
             var ctx2 = document.getElementById('chartDistribution');
             if (ctx2) {
                 chartDistribution = new Chart(ctx2, {
                     type: 'bar',
                     data: {
-                        labels: ['Localités', 'Écoles', 'Routes', 'Arrondissements', 'Departements'],
+                        labels: ['Localités', 'Écoles', 'Routes', 'Arrondissements', 'Départements'],
                         datasets: [{
                             label: 'Nombre d\'éléments',
-                            data: [0, 0, 0, 0],
+                            data: [0, 0, 0, 0, 0],
                             backgroundColor: [
-
-
-                                'rgba(220, 53, 69, 0.8)',
-                                'rgba(40, 167, 69, 0.8)',
-                                'rgba(253, 126, 20, 0.8)',
-                                'rgba(111, 66, 193, 0.8)',
-                                'rgba(0, 123, 255, 0.8)'
+                                'rgba(239, 68, 68, 0.8)',
+                                'rgba(16, 185, 129, 0.8)',
+                                'rgba(245, 158, 11, 0.8)',
+                                'rgba(99, 102, 241, 0.8)',
+                                'rgba(139, 92, 246, 0.8)'
                             ]
                         }]
                     },
@@ -886,23 +1232,28 @@
             }
         }
 
-        // Initialiser les graphiques au chargement
         document.addEventListener('DOMContentLoaded', function () {
             initCharts();
         });
 
-
-        /* ========================================
-           FONCTIONS DE NAVIGATION
-           ======================================== */
+        /* FONCTIONS DE NAVIGATION */
+        function toggleSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            var icon = document.getElementById('toggleIcon');
+            
+            sidebar.classList.toggle('collapsed');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                icon.className = 'bi bi-chevron-right';
+            } else {
+                icon.className = 'bi bi-chevron-left';
+            }
+        }
 
         function toggleLayer(type) {
-            var layer;
-            var checkbox;
+            var layer, checkbox;
 
             switch (type) {
-
-
                 case 'localites':
                     layer = layerLocalites;
                     checkbox = document.getElementById('layerLocalites');
@@ -937,7 +1288,6 @@
                 alert("Aucun équipement chargé");
                 return;
             }
-
             currentIndex = (currentIndex - 1 + equipementsList.length) % equipementsList.length;
             naviguerVers(currentIndex);
         }
@@ -947,7 +1297,6 @@
                 alert("Aucun équipement chargé");
                 return;
             }
-
             currentIndex = (currentIndex + 1) % equipementsList.length;
             naviguerVers(currentIndex);
         }
@@ -986,21 +1335,180 @@
             alert("✅ Fichier GeoJSON téléchargé !");
         }
 
-
-        /* ========================================
-           OUTILS SUPPLÉMENTAIRES
-           ======================================== */
-
-        // Échelle
-        L.control.scale({ imperial: false }).addTo(map);
-
-        // Impression
-        if (L.control.browserPrint) {
-            L.control.browserPrint({ position: 'topleft' }).addTo(map);
+        /* FONCTIONS DE REQUÊTE */
+        function toggleQueryForm(type) {
+            var attrForm = document.getElementById('queryFormAttr');
+            var spatialForm = document.getElementById('queryFormSpatial');
+            
+            if (type === 'attributaire') {
+                attrForm.classList.toggle('active');
+                spatialForm.classList.remove('active');
+            } else {
+                spatialForm.classList.toggle('active');
+                attrForm.classList.remove('active');
+            }
         }
 
-        console.log("✅ Carte initialisée");
-        console.log("📝 Consultez les TODO dans le code pour charger vos fichiers GeoJSON");
+        function executeAttributeQuery() {
+            var layerName = document.getElementById('attrLayer').value;
+            var field = document.getElementById('attrField').value;
+            var value = document.getElementById('attrValue').value.toLowerCase();
+
+            if (!value) {
+                alert("Veuillez entrer une valeur");
+                return;
+            }
+
+            var resultsDiv = document.getElementById('attrResults');
+            resultsDiv.innerHTML = '';
+            resultsDiv.style.display = 'block';
+
+            var count = 0;
+            var results = [];
+
+            equipementsList.forEach(function(item) {
+                if (item.type === layerName.slice(0, -1)) {
+                    var propValue = (item.properties[field] || '').toString().toLowerCase();
+                    if (propValue.includes(value)) {
+                        count++;
+                        results.push(item);
+                        var div = document.createElement('div');
+                        div.className = 'result-item';
+                        div.innerHTML = `<strong>${item.properties.nom || item.properties.name}</strong> - ${item.properties[field] || 'N/A'}`;
+                        div.style.cursor = 'pointer';
+                        div.onclick = function() {
+                            map.setView(item.latlng, 16);
+                            item.layer.openPopup();
+                        };
+                        resultsDiv.appendChild(div);
+                    }
+                }
+            });
+
+            if (count === 0) {
+                resultsDiv.innerHTML = '<div class="result-item">Aucun résultat trouvé</div>';
+            } else {
+                var summary = document.createElement('div');
+                summary.className = 'result-item';
+                summary.style.background = 'var(--success-color)';
+                summary.style.color = 'white';
+                summary.style.fontWeight = 'bold';
+                summary.innerHTML = `✅ ${count} résultat(s) trouvé(s)`;
+                resultsDiv.insertBefore(summary, resultsDiv.firstChild);
+            }
+        }
+
+        function updatePolygonSelect() {
+            var targetLayer = document.getElementById('spatialTargetLayer').value;
+            var select = document.getElementById('polygonSelect');
+            select.innerHTML = '<option value="">-- Sélectionner --</option>';
+
+            var data = geoJsonData[targetLayer];
+            if (data && data.features) {
+                data.features.forEach(function(feature, index) {
+                    var option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = feature.properties.nom || feature.properties.name || 'Polygon ' + (index + 1);
+                    select.appendChild(option);
+                });
+            }
+        }
+
+        document.getElementById('spatialTargetLayer').addEventListener('change', updatePolygonSelect);
+
+        function executeSpatialQuery() {
+            var sourceLayerName = document.getElementById('spatialSourceLayer').value;
+            var relation = document.getElementById('spatialRelation').value;
+            var targetLayerName = document.getElementById('spatialTargetLayer').value;
+            var polygonIndex = document.getElementById('polygonSelect').value;
+
+            if (!polygonIndex) {
+                alert("Veuillez sélectionner un polygone");
+                return;
+            }
+
+            var targetData = geoJsonData[targetLayerName];
+            var targetFeature = targetData.features[parseInt(polygonIndex)];
+            var targetPolygon = L.geoJSON(targetFeature);
+
+            var resultsDiv = document.getElementById('spatialResults');
+            resultsDiv.innerHTML = '';
+            resultsDiv.style.display = 'block';
+
+            var count = 0;
+            var results = [];
+
+            equipementsList.forEach(function(item) {
+                if (item.type === sourceLayerName.slice(0, -1)) {
+                    var itemLatLng = item.latlng;
+                    var isInside = false;
+
+                    targetPolygon.eachLayer(function(layer) {
+                        if (layer.getBounds) {
+                            var bounds = layer.getBounds();
+                            if (relation === 'within') {
+                                if (bounds.contains(itemLatLng)) {
+                                    isInside = true;
+                                }
+                            } else if (relation === 'intersects') {
+                                if (bounds.contains(itemLatLng)) {
+                                    isInside = true;
+                                }
+                            }
+                        }
+                    });
+
+                    if (isInside) {
+                        count++;
+                        results.push(item);
+                        var div = document.createElement('div');
+                        div.className = 'result-item';
+                        div.innerHTML = `<strong>${item.properties.nom || item.properties.name}</strong>`;
+                        div.style.cursor = 'pointer';
+                        div.onclick = function() {
+                            map.setView(item.latlng, 16);
+                            item.layer.openPopup();
+                        };
+                        resultsDiv.appendChild(div);
+                    }
+                }
+            });
+
+            if (count === 0) {
+                resultsDiv.innerHTML = '<div class="result-item">Aucun résultat trouvé</div>';
+            } else {
+                var summary = document.createElement('div');
+                summary.className = 'result-item';
+                summary.style.background = 'var(--secondary-color)';
+                summary.style.color = 'white';
+                summary.style.fontWeight = 'bold';
+                summary.innerHTML = `✅ ${count} élément(s) trouvé(s)`;
+                resultsDiv.insertBefore(summary, resultsDiv.firstChild);
+
+                targetPolygon.setStyle({
+                    color: '#ff00ff',
+                    weight: 3,
+                    fillOpacity: 0.3
+                }).addTo(map);
+
+                setTimeout(function() {
+                    map.removeLayer(targetPolygon);
+                }, 5000);
+            }
+        }
+
+        /* OUTILS SUPPLÉMENTAIRES */
+        L.control.scale({ imperial: false }).addTo(map);
+
+        // Message de démarrage dans la console
+        console.log("🗺️ Carte initialisée");
+        console.log("📂 Vérification des couches:");
+        console.log("- Localités: en attente...");
+        console.log("- Écoles: en attente...");
+        console.log("- Routes: en attente...");
+        console.log("- Arrondissements: en attente...");
+        console.log("- Départements: en attente...");
+        console.log("ℹ️ Ouvrez la console (F12) pour voir les messages de chargement");
     </script>
 </body>
 
